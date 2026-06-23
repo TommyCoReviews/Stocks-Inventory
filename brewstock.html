@@ -1,0 +1,1850 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TommyCo. — Coffee Shop Inventory</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+      --bg: #0f0d0b;
+      --bg2: #1a1714;
+      --bg3: #231f1b;
+      --bg4: #2e2825;
+      --card: #1e1a17;
+      --card2: #28231f;
+      --border: #3a3330;
+      --border2: #4a4440;
+      --text: #f5ede6;
+      --text2: #b8a89a;
+      --text3: #7a6a60;
+      --brand: #c8824a;
+      --brand2: #e8a06a;
+      --brand3: #f0c090;
+      --green: #4caf7d;
+      --red: #e05555;
+      --amber: #e8a832;
+      --blue: #5b9bd5;
+      --sidebar: 240px;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+      font-size: 14px
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: var(--sidebar);
+      background: var(--bg2);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      flex-shrink: 0;
+      z-index: 100;
+      transition: transform .3s
+    }
+
+    .logo {
+      padding: 20px 20px 16px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .logo-icon {
+      width: 38px;
+      height: 38px;
+      background: var(--brand);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0
+    }
+
+    .logo-text {
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: -.3px
+    }
+
+    .logo-sub {
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: .5px;
+      text-transform: uppercase
+    }
+
+    .nav {
+      flex: 1;
+      padding: 10px 0;
+      overflow-y: auto
+    }
+
+    .nav-section {
+      font-size: 10px;
+      color: var(--text3);
+      letter-spacing: .8px;
+      text-transform: uppercase;
+      padding: 14px 20px 6px
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 20px;
+      cursor: pointer;
+      color: var(--text2);
+      border-left: 3px solid transparent;
+      transition: all .2s;
+      user-select: none
+    }
+
+    .nav-item:hover {
+      background: var(--bg3);
+      color: var(--text)
+    }
+
+    .nav-item.active {
+      background: rgba(200, 130, 74, .12);
+      color: var(--brand2);
+      border-left-color: var(--brand)
+    }
+
+    .nav-item .icon {
+      font-size: 16px;
+      width: 22px;
+      text-align: center
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--red);
+      color: #fff;
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 99px;
+      font-weight: 700
+    }
+
+    .sidebar-footer {
+      padding: 14px 20px;
+      border-top: 1px solid var(--border)
+    }
+
+    .user-card {
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: var(--brand);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      color: #fff;
+      flex-shrink: 0
+    }
+
+    .user-name {
+      font-size: 13px;
+      font-weight: 600
+    }
+
+    .user-role {
+      font-size: 11px;
+      color: var(--text3)
+    }
+
+    .logout-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 16px
+    }
+
+    .logout-btn:hover {
+      color: var(--red)
+    }
+
+    /* MAIN */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow: hidden;
+      min-width: 0
+    }
+
+    .topbar {
+      height: 58px;
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+      gap: 12px;
+      flex-shrink: 0
+    }
+
+    .hamburger {
+      display: none;
+      width: 36px;
+      height: 36px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 18px;
+      flex-shrink: 0
+    }
+
+    .topbar-title {
+      font-size: 15px;
+      font-weight: 700;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .search-box {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: var(--text);
+      font-size: 13px;
+      width: 200px;
+      outline: none
+    }
+
+    .search-box:focus {
+      border-color: var(--brand)
+    }
+
+    .notif-btn {
+      width: 36px;
+      height: 36px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      position: relative;
+      font-size: 15px;
+      flex-shrink: 0
+    }
+
+    .notif-dot {
+      position: absolute;
+      top: 7px;
+      right: 7px;
+      width: 8px;
+      height: 8px;
+      background: var(--red);
+      border-radius: 50%;
+      border: 2px solid var(--bg2)
+    }
+
+    .add-btn {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0
+    }
+
+    .add-btn:hover {
+      background: var(--brand2)
+    }
+
+    /* CONTENT */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 22px;
+      display: none
+    }
+
+    .content.active {
+      display: block
+    }
+
+    .page-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 4px
+    }
+
+    .page-sub {
+      font-size: 12px;
+      color: var(--text3);
+      margin-bottom: 22px
+    }
+
+    /* STATS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin-bottom: 20px
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px
+    }
+
+    .stat-label {
+      font-size: 10px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .6px;
+      margin-bottom: 8px
+    }
+
+    .stat-val {
+      font-size: 26px;
+      font-weight: 700;
+      margin-bottom: 4px
+    }
+
+    .stat-change {
+      font-size: 11px;
+      color: var(--text3)
+    }
+
+    .c-green {
+      color: var(--green)
+    }
+
+    .c-red {
+      color: var(--red)
+    }
+
+    .c-amber {
+      color: var(--amber)
+    }
+
+    .c-blue {
+      color: var(--blue)
+    }
+
+    /* QUICK ACTIONS */
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin-bottom: 20px
+    }
+
+    .quick-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all .2s
+    }
+
+    .quick-card:hover {
+      border-color: var(--brand);
+      background: var(--card2);
+      transform: translateY(-2px)
+    }
+
+    .quick-icon {
+      font-size: 24px;
+      margin-bottom: 8px
+    }
+
+    .quick-label {
+      font-size: 12px;
+      color: var(--text2);
+      font-weight: 500
+    }
+
+    /* CHARTS */
+    .chart-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 14px;
+      margin-bottom: 20px
+    }
+
+    .chart-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 18px
+    }
+
+    .chart-title {
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .chart-sub {
+      font-size: 11px;
+      color: var(--text3);
+      font-weight: 400
+    }
+
+    /* BOTTOM GRID */
+    .bottom-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
+
+    /* CARDS */
+    .panel {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      overflow: hidden;
+      margin-bottom: 14px
+    }
+
+    .panel-header {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .panel-title {
+      font-size: 13px;
+      font-weight: 600
+    }
+
+    /* TABLE */
+    .table-wrap {
+      overflow-x: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse
+    }
+
+    th {
+      text-align: left;
+      font-size: 10px;
+      color: var(--text3);
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      background: var(--bg2);
+      white-space: nowrap
+    }
+
+    td {
+      padding: 11px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid rgba(58, 51, 48, .4);
+      vertical-align: middle
+    }
+
+    tr:last-child td {
+      border-bottom: none
+    }
+
+    tr:hover td {
+      background: rgba(255, 255, 255, .02)
+    }
+
+    /* BADGES */
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600
+    }
+
+    .badge-green {
+      background: rgba(76, 175, 125, .15);
+      color: var(--green)
+    }
+
+    .badge-red {
+      background: rgba(224, 85, 85, .15);
+      color: var(--red)
+    }
+
+    .badge-amber {
+      background: rgba(232, 168, 50, .15);
+      color: var(--amber)
+    }
+
+    .badge-blue {
+      background: rgba(91, 155, 213, .15);
+      color: var(--blue)
+    }
+
+    .badge-gray {
+      background: rgba(255, 255, 255, .08);
+      color: var(--text2)
+    }
+
+    /* PROGRESS */
+    .prog-bar {
+      height: 5px;
+      background: var(--border);
+      border-radius: 99px;
+      margin-top: 5px;
+      overflow: hidden
+    }
+
+    .prog-fill {
+      height: 100%;
+      border-radius: 99px
+    }
+
+    .prog-green {
+      background: var(--green)
+    }
+
+    .prog-amber {
+      background: var(--amber)
+    }
+
+    .prog-red {
+      background: var(--red)
+    }
+
+    /* ACTIVITY */
+    .activity-item {
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(58, 51, 48, .4)
+    }
+
+    .activity-item:last-child {
+      border-bottom: none
+    }
+
+    .act-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0
+    }
+
+    .act-text {
+      font-size: 13px;
+      flex: 1;
+      line-height: 1.4
+    }
+
+    .act-time {
+      font-size: 11px;
+      color: var(--text3);
+      white-space: nowrap
+    }
+
+    /* LOW STOCK LIST */
+    .low-item {
+      padding: 13px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(58, 51, 48, .4)
+    }
+
+    .low-item:last-child {
+      border-bottom: none
+    }
+
+    .low-info {
+      flex: 1
+    }
+
+    .low-name {
+      font-size: 13px;
+      font-weight: 500
+    }
+
+    .low-detail {
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 2px
+    }
+
+    /* ALERT BAR */
+    .alert-bar {
+      background: rgba(224, 85, 85, .1);
+      border: 1px solid rgba(224, 85, 85, .3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      color: var(--red)
+    }
+
+    /* FILTERS */
+    .filters {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+      align-items: center
+    }
+
+    .filter-btn {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 13px;
+      font-size: 12px;
+      color: var(--text2);
+      cursor: pointer;
+      transition: all .2s
+    }
+
+    .filter-btn:hover,
+    .filter-btn.active {
+      background: var(--brand);
+      border-color: var(--brand);
+      color: #fff
+    }
+
+    .filter-search {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 12px;
+      font-size: 12px;
+      color: var(--text);
+      outline: none;
+      width: 180px
+    }
+
+    .filter-search:focus {
+      border-color: var(--brand)
+    }
+
+    /* MOVEMENT */
+    .move-item {
+      padding: 13px 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid rgba(58, 51, 48, .4)
+    }
+
+    .move-item:last-child {
+      border-bottom: none
+    }
+
+    .move-dir {
+      width: 38px;
+      height: 38px;
+      border-radius: 9px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0
+    }
+
+    .move-in {
+      background: rgba(76, 175, 125, .15);
+      color: var(--green)
+    }
+
+    .move-out {
+      background: rgba(224, 85, 85, .15);
+      color: var(--red)
+    }
+
+    .move-info {
+      flex: 1
+    }
+
+    .move-product {
+      font-size: 13px;
+      font-weight: 500
+    }
+
+    .move-meta {
+      font-size: 11px;
+      color: var(--text3);
+      margin-top: 2px
+    }
+
+    .move-qty {
+      font-size: 13px;
+      font-weight: 700
+    }
+
+    /* RECIPE CARD */
+    .recipe-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px
+    }
+
+    .recipe-name {
+      font-size: 14px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px
+    }
+
+    .recipe-ing {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text2);
+      padding: 3px 0
+    }
+
+    .sell-btn {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 16px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px
+    }
+
+    .sell-btn:hover {
+      background: var(--brand2)
+    }
+
+    /* MODAL */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .75);
+      z-index: 500;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px
+    }
+
+    .overlay.open {
+      display: flex
+    }
+
+    .modal {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 16px;
+      padding: 26px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 92vh;
+      overflow-y: auto
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text3);
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+      padding: 2px 6px
+    }
+
+    .modal-close:hover {
+      color: var(--red)
+    }
+
+    .form-group {
+      margin-bottom: 14px
+    }
+
+    .form-label {
+      display: block;
+      font-size: 11px;
+      color: var(--text2);
+      font-weight: 600;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+      letter-spacing: .4px
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      font-size: 13px;
+      color: var(--text);
+      outline: none;
+      font-family: inherit
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      border-color: var(--brand)
+    }
+
+    .form-select option {
+      background: var(--bg3)
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px
+    }
+
+    .form-actions {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+      margin-top: 18px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border)
+    }
+
+    .btn-primary {
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 20px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .btn-primary:hover {
+      background: var(--brand2)
+    }
+
+    .btn-cancel {
+      background: transparent;
+      color: var(--text2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 18px;
+      font-size: 13px;
+      cursor: pointer;
+      font-family: inherit
+    }
+
+    .btn-cancel:hover {
+      background: var(--bg3)
+    }
+
+    /* TOAST */
+    .toast {
+      position: fixed;
+      bottom: 22px;
+      right: 22px;
+      background: var(--card2);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 13px 18px;
+      font-size: 13px;
+      z-index: 1000;
+      transform: translateY(80px);
+      opacity: 0;
+      transition: all .3s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 310px;
+      pointer-events: none
+    }
+
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1
+    }
+
+    .toast.success {
+      border-left: 4px solid var(--green)
+    }
+
+    .toast.error {
+      border-left: 4px solid var(--red)
+    }
+
+    .toast.warning {
+      border-left: 4px solid var(--amber)
+    }
+
+    /* LOGIN */
+    .login-screen {
+      position: fixed;
+      inset: 0;
+      background: var(--bg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      padding: 16px
+    }
+
+    .login-card {
+      background: var(--card);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 36px;
+      width: 100%;
+      max-width: 360px
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 28px
+    }
+
+    .login-icon {
+      width: 56px;
+      height: 56px;
+      background: var(--brand);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 12px
+    }
+
+    .login-title {
+      font-size: 22px;
+      font-weight: 800;
+      margin-bottom: 4px
+    }
+
+    .login-sub {
+      font-size: 12px;
+      color: var(--text3)
+    }
+
+    .role-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 18px
+    }
+
+    .role-opt {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 10px 6px;
+      text-align: center;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text2);
+      transition: all .2s
+    }
+
+    .role-opt:hover {
+      border-color: var(--brand2)
+    }
+
+    .role-opt.selected {
+      border-color: var(--brand);
+      background: rgba(200, 130, 74, .12);
+      color: var(--brand2)
+    }
+
+    .role-opt .role-icon {
+      font-size: 20px;
+      margin-bottom: 4px
+    }
+
+    .login-btn {
+      width: 100%;
+      background: var(--brand);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 6px
+    }
+
+    .login-btn:hover {
+      background: var(--brand2)
+    }
+
+    /* REPORT */
+    .report-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 0;
+      border-bottom: 1px solid rgba(58, 51, 48, .35);
+      font-size: 13px
+    }
+
+    .report-row:last-child {
+      border-bottom: none
+    }
+
+    .export-btn {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 7px 14px;
+      font-size: 12px;
+      color: var(--text2);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .export-btn:hover {
+      border-color: var(--brand);
+      color: var(--brand2)
+    }
+
+    /* SIDEBAR OVERLAY (mobile) */
+    .sidebar-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .5);
+      z-index: 99
+    }
+
+    /* RESPONSIVE */
+    @media(max-width:900px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+
+      .chart-grid {
+        grid-template-columns: 1fr
+      }
+
+      .bottom-grid {
+        grid-template-columns: 1fr
+      }
+
+      .quick-grid {
+        grid-template-columns: repeat(2, 1fr)
+      }
+    }
+
+    @media(max-width:640px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        height: 100vh;
+        transform: translateX(-100%)
+      }
+
+      .sidebar.open {
+        transform: translateX(0)
+      }
+
+      .sidebar-overlay {
+        display: block
+      }
+
+      .hamburger {
+        display: flex
+      }
+
+      .search-box {
+        width: 130px
+      }
+
+      .stats-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .form-row {
+        grid-template-columns: 1fr
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOGIN -->
+  <div class="login-screen" id="loginScreen">
+    <div class="login-card">
+      <div class="login-header">
+        <div class="login-icon">☕</div>
+        <div class="login-title">TommyCo.</div>
+        <div class="login-sub">Coffee Shop Inventory System</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input class="form-input" type="email" value="tommyco@gmail.com">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input class="form-input" type="password" value="password123">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sign in as</label>
+        <div class="role-grid">
+          <div class="role-opt selected" onclick="selectRole(this)">
+            <div class="role-icon">👑</div>Admin
+          </div>
+          <div class="role-opt" onclick="selectRole(this)">
+            <div class="role-icon">📊</div>Manager
+          </div>
+          <div class="role-opt" onclick="selectRole(this)">
+            <div class="role-icon">👤</div>Staff
+          </div>
+        </div>
+      </div>
+      <button class="login-btn" onclick="doLogin()">Sign In →</button>
+    </div>
+  </div>
+
+  <!-- SIDEBAR OVERLAY -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="logo">
+      <div class="logo-icon">☕</div>
+      <div>
+        <div class="logo-text">TommyCo.</div>
+        <div class="logo-sub">Inventory Pro</div>
+      </div>
+    </div>
+    <nav class="nav">
+      <div class="nav-section">Main</div>
+      <div class="nav-item active" onclick="showPage('dashboard',this)"><span class="icon">📊</span> Dashboard</div>
+      <div class="nav-item" onclick="showPage('inventory',this)"><span class="icon">📦</span> Inventory <span
+          class="nav-badge" id="lowBadge">3</span></div>
+      <div class="nav-item" onclick="showPage('movements',this)"><span class="icon">🔄</span> Stock Movement</div>
+      <div class="nav-item" onclick="showPage('sales',this)"><span class="icon">☕</span> Sales</div>
+      <div class="nav-section">Manage</div>
+      <div class="nav-item" onclick="showPage('alerts',this)"><span class="icon">🔔</span> Alerts <span
+          class="nav-badge" id="alertBadge">3</span></div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="avatar" id="sidebarAvatar">DA</div>
+        <div>
+          <div class="user-name" id="sidebarName">Darwin Admin</div>
+          <div class="user-role" id="sidebarRole">Administrator</div>
+        </div>
+        <button class="logout-btn" onclick="doLogout()" title="Logout">⏻</button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="topbar">
+      <div class="hamburger" id="hamburger" onclick="toggleSidebar()">☰</div>
+      <div class="topbar-title" id="topbarTitle">Dashboard</div>
+      <input class="search-box" placeholder="🔍 Search..." oninput="globalSearch(this.value)" id="globalSearchBox">
+      <div class="notif-btn" onclick="showPage('alerts',null)" title="Alerts">🔔<div class="notif-dot"></div>
+      </div>
+      <button class="add-btn" onclick="openAddModal()">+ Add Item</button>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div class="content active" id="page-dashboard">
+      <div class="page-title">Good morning ☀️</div>
+      <div class="page-sub">Here's your inventory overview for today</div>
+
+      <div class="alert-bar" id="dashAlert">⚠️ <strong>3 items are below minimum stock</strong> — Oat Milk, Vanilla
+        Syrup, Espresso Cups need restocking.</div>
+
+      <div class="panel" style="margin-bottom:20px">
+        <div class="panel-header">
+          <div class="panel-title">Your inventory at a glance</div>
+        </div>
+        <div style="padding:18px;color:var(--text2);font-size:14px;line-height:1.6">
+          • See what needs restocking first.
+          <br>• Add new stock items with the button above.
+          <br>• Use Stock In / Stock Out to track daily work.
+        </div>
+      </div>
+
+      <div class="panel" style="margin-bottom:20px">
+        <div class="panel-header">
+          <div class="panel-title">🔔 Low Stock Alerts</div>
+        </div>
+        <div id="dashLowList"></div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">🕓 Recent Activity</div>
+        </div>
+        <div id="dashActivity"></div>
+      </div>
+    </div>
+
+    <!-- INVENTORY -->
+    <div class="content" id="page-inventory">
+      <div class="page-title">Inventory Management</div>
+      <div class="page-sub">Manage all products, ingredients, and supplies</div>
+      <div class="filters" id="catFilters">
+        <button class="filter-btn active" onclick="filterCat('all',this)">All</button>
+        <button class="filter-btn" onclick="filterCat('Coffee Beans',this)">Coffee Beans</button>
+        <button class="filter-btn" onclick="filterCat('Milk',this)">Milk</button>
+        <button class="filter-btn" onclick="filterCat('Syrups',this)">Syrups</button>
+        <button class="filter-btn" onclick="filterCat('Cups',this)">Cups & Lids</button>
+        <button class="filter-btn" onclick="filterCat('Pastries',this)">Pastries</button>
+        <button class="filter-btn" onclick="filterCat('Cleaning',this)">Cleaning</button>
+        <input class="filter-search" id="invSearch" placeholder="Search products..."
+          oninput="searchInventory(this.value)">
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">All Products (<span id="invCount">0</span>)</div>
+          <button class="add-btn" style="font-size:12px;padding:6px 13px" onclick="openAddModal()">+ Add
+            Product</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Category</th>
+                <th>Stock</th>
+                <th>Min</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="invBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- MOVEMENTS -->
+    <div class="content" id="page-movements">
+      <div class="page-title">Stock Movement</div>
+      <div class="page-sub">Track all incoming and outgoing inventory</div>
+      <div style="display:flex;gap:10px;margin-bottom:16px">
+        <button class="add-btn" onclick="openMovementModal('in')">📥 Stock In</button>
+        <button class="export-btn" onclick="openMovementModal('out')">📤 Stock Out</button>
+      </div>
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Movement Log</div><span class="badge badge-green">Live</span>
+        </div>
+        <div id="moveList"></div>
+      </div>
+    </div>
+
+    <!-- SALES -->
+    <div class="content" id="page-sales">
+      <div class="page-title">Sales</div>
+      <div class="page-sub">Log a sale, and inventory updates automatically.</div>
+      <div id="recipeGrid"></div>
+    </div>
+
+    <!-- ALERTS -->
+    <div class="content" id="page-alerts">
+      <div class="page-title">Stock Alerts</div>
+      <div class="page-sub">Items that need your attention right now</div>
+      <div id="alertsGrid"></div>
+    </div>
+
+  </div>
+
+  <!-- ADD PRODUCT MODAL -->
+  <div class="overlay" id="addModal">
+    <div class="modal">
+      <div class="modal-title">Add New Product <button class="modal-close" onclick="closeModal('addModal')">✕</button>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Product Name *</label><input class="form-input" id="nName"
+            placeholder="e.g. Arabica Beans"></div>
+        <div class="form-group"><label class="form-label">Category *</label>
+          <select class="form-select" id="nCat">
+            <option>Coffee Beans</option>
+            <option>Milk</option>
+            <option>Syrups</option>
+            <option>Cups</option>
+            <option>Lids</option>
+            <option>Pastries</option>
+            <option>Cleaning</option>
+            <option>Others</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Current Stock *</label><input class="form-input" id="nStock"
+            type="number" placeholder="0" min="0"></div>
+        <div class="form-group"><label class="form-label">Minimum Threshold *</label><input class="form-input" id="nMin"
+            type="number" placeholder="0" min="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Unit</label>
+          <select class="form-select" id="nUnit">
+            <option>kg</option>
+            <option>g</option>
+            <option>L</option>
+            <option>ml</option>
+            <option>pcs</option>
+            <option>cups</option>
+            <option>bottles</option>
+            <option>boxes</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Cost per Unit (₱)</label><input class="form-input" id="nCost"
+            type="number" placeholder="0" min="0"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Supplier</label><input class="form-input" id="nSupplier"
+            placeholder="Supplier name"></div>
+        <div class="form-group"><label class="form-label">Expiration Date</label><input class="form-input" id="nExp"
+            type="date"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="closeModal('addModal')">Cancel</button>
+        <button class="btn-primary" onclick="addProduct()">Add Product</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- STOCK MOVEMENT MODAL -->
+  <div class="overlay" id="moveModal">
+    <div class="modal">
+      <div class="modal-title" id="moveTitleEl">Stock In <button class="modal-close"
+          onclick="closeModal('moveModal')">✕</button></div>
+      <input type="hidden" id="moveDir" value="in">
+      <div class="form-group"><label class="form-label">Product *</label><select class="form-select"
+          id="moveProduct"></select></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Quantity *</label><input class="form-input" id="moveQty"
+            type="number" placeholder="0" min="0.01" step="any"></div>
+        <div class="form-group"><label class="form-label">Staff Name</label><input class="form-input" id="moveStaff"
+            placeholder="Your name"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Reason</label><select class="form-select"
+          id="moveReason"></select></div>
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="closeModal('moveModal')">Cancel</button>
+        <button class="btn-primary" onclick="logMovement()">Log Movement</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- EDIT MODAL -->
+  <div class="overlay" id="editModal">
+    <div class="modal">
+      <div class="modal-title">Edit Product <button class="modal-close" onclick="closeModal('editModal')">✕</button>
+      </div>
+      <input type="hidden" id="editId">
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Product Name</label><input class="form-input" id="eName">
+        </div>
+        <div class="form-group"><label class="form-label">Category</label>
+          <select class="form-select" id="eCat">
+            <option>Coffee Beans</option>
+            <option>Milk</option>
+            <option>Syrups</option>
+            <option>Cups</option>
+            <option>Lids</option>
+            <option>Pastries</option>
+            <option>Cleaning</option>
+            <option>Others</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Current Stock</label><input class="form-input" id="eStock"
+            type="number" step="any"></div>
+        <div class="form-group"><label class="form-label">Min Threshold</label><input class="form-input" id="eMin"
+            type="number" step="any"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Unit</label>
+          <select class="form-select" id="eUnit">
+            <option>kg</option>
+            <option>g</option>
+            <option>L</option>
+            <option>ml</option>
+            <option>pcs</option>
+            <option>cups</option>
+            <option>bottles</option>
+            <option>boxes</option>
+          </select>
+        </div>
+        <div class="form-group"><label class="form-label">Cost per Unit (₱)</label><input class="form-input" id="eCost"
+            type="number" step="any"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Supplier</label><input class="form-input" id="eSupplier">
+        </div>
+        <div class="form-group"><label class="form-label">Expiration Date</label><input class="form-input" id="eExp"
+            type="date"></div>
+      </div>
+      <div class="form-actions">
+        <button class="btn-cancel" onclick="closeModal('editModal')">Cancel</button>
+        <button class="btn-primary" onclick="saveEdit()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ── DATA ──────────────────────────────────────────────
+    var inventory = [
+      { id: 1, name: 'Arabica Espresso Beans', cat: 'Coffee Beans', stock: 12.5, min: 5, unit: 'kg', cost: 680, supplier: 'BrewMasters PH', exp: '2024-12-31' },
+      { id: 2, name: 'Robusta Blend Beans', cat: 'Coffee Beans', stock: 8.0, min: 3, unit: 'kg', cost: 520, supplier: 'BrewMasters PH', exp: '2024-11-30' },
+      { id: 3, name: 'Fresh Cow Milk', cat: 'Milk', stock: 15, min: 10, unit: 'L', cost: 85, supplier: 'FreshFarm PH', exp: '2024-05-18' },
+      { id: 4, name: 'Oat Milk', cat: 'Milk', stock: 2, min: 5, unit: 'L', cost: 210, supplier: 'FreshFarm PH', exp: '2024-08-01' },
+      { id: 5, name: 'Vanilla Syrup', cat: 'Syrups', stock: 0.8, min: 2, unit: 'L', cost: 420, supplier: 'SyrupWorld MNL', exp: '2025-03-15' },
+      { id: 6, name: 'Caramel Syrup', cat: 'Syrups', stock: 3.5, min: 2, unit: 'L', cost: 380, supplier: 'SyrupWorld MNL', exp: '2025-03-15' },
+      { id: 7, name: 'Hazelnut Syrup', cat: 'Syrups', stock: 2.2, min: 1.5, unit: 'L', cost: 420, supplier: 'SyrupWorld MNL', exp: '2025-02-28' },
+      { id: 8, name: 'Pandan Syrup', cat: 'Syrups', stock: 0, min: 1, unit: 'L', cost: 350, supplier: 'SyrupWorld MNL', exp: '2025-01-31' },
+      { id: 9, name: 'Cups 12oz', cat: 'Cups', stock: 45, min: 100, unit: 'pcs', cost: 4.5, supplier: 'PackagingPro', exp: null },
+      { id: 10, name: 'Cups 16oz', cat: 'Cups', stock: 280, min: 100, unit: 'pcs', cost: 5.5, supplier: 'PackagingPro', exp: null },
+      { id: 11, name: 'Lids Flat', cat: 'Cups', stock: 320, min: 150, unit: 'pcs', cost: 2.5, supplier: 'PackagingPro', exp: null },
+      { id: 12, name: 'Croissant', cat: 'Pastries', stock: 18, min: 10, unit: 'pcs', cost: 45, supplier: 'BakePH', exp: '2024-05-17' },
+      { id: 13, name: 'All-Purpose Cleaner', cat: 'Cleaning', stock: 4, min: 2, unit: 'bottles', cost: 120, supplier: 'CleanCo PH', exp: '2026-01-01' },
+      { id: 14, name: 'Dish Soap', cat: 'Cleaning', stock: 3, min: 2, unit: 'bottles', cost: 85, supplier: 'CleanCo PH', exp: '2026-01-01' },
+    ];
+
+    var movements = [
+      { dir: 'in', product: 'Arabica Espresso Beans', qty: 5, unit: 'kg', reason: 'Supplier Delivery', staff: 'Maria S.', time: '9:14 AM' },
+      { dir: 'out', product: 'Fresh Cow Milk', qty: 2, unit: 'L', reason: 'Drink Preparation', staff: 'Rico D.', time: '9:02 AM' },
+      { dir: 'out', product: 'Vanilla Syrup', qty: 0.5, unit: 'L', reason: 'Drink Preparation', staff: 'Rico D.', time: '8:55 AM' },
+      { dir: 'in', product: 'Cups 16oz', qty: 100, unit: 'pcs', reason: 'Supplier Delivery', staff: 'Maria S.', time: '8:30 AM' },
+      { dir: 'out', product: 'Arabica Espresso Beans', qty: 0.36, unit: 'kg', reason: 'Drink Preparation', staff: 'Ana L.', time: '8:15 AM' },
+    ];
+
+    var recipes = [
+      { name: 'Café Latte', icon: '☕', price: 160, ingredients: [{ name: 'Arabica Espresso Beans', qty: 18, unit: 'g' }, { name: 'Fresh Cow Milk', qty: 200, unit: 'ml' }, { name: 'Cups 12oz', qty: 1, unit: 'pcs' }, { name: 'Lids Flat', qty: 1, unit: 'pcs' }] },
+      { name: 'Caramel Macchiato', icon: '🍮', price: 185, ingredients: [{ name: 'Arabica Espresso Beans', qty: 18, unit: 'g' }, { name: 'Fresh Cow Milk', qty: 180, unit: 'ml' }, { name: 'Caramel Syrup', qty: 30, unit: 'ml' }, { name: 'Cups 16oz', qty: 1, unit: 'pcs' }] },
+      { name: 'Matcha Oat Latte', icon: '🍵', price: 195, ingredients: [{ name: 'Oat Milk', qty: 250, unit: 'ml' }, { name: 'Cups 16oz', qty: 1, unit: 'pcs' }, { name: 'Lids Flat', qty: 1, unit: 'pcs' }] },
+      { name: 'Vanilla Iced Coffee', icon: '🧊', price: 175, ingredients: [{ name: 'Arabica Espresso Beans', qty: 18, unit: 'g' }, { name: 'Fresh Cow Milk', qty: 150, unit: 'ml' }, { name: 'Vanilla Syrup', qty: 20, unit: 'ml' }, { name: 'Cups 16oz', qty: 1, unit: 'pcs' }] },
+    ];
+
+    var activities = [
+      { color: 'green', text: 'Espresso Beans restocked +5kg by Maria S.', time: '9:14 AM' },
+      { color: 'red', text: '2L Oat Milk consumed — 12 lattes sold', time: '9:02 AM' },
+      { color: 'amber', text: '⚠️ Vanilla Syrup below minimum threshold', time: '8:45 AM' },
+      { color: 'blue', text: 'Supplier order placed — FreshFarm PH', time: '8:30 AM' },
+      { color: 'green', text: 'Daily inventory check completed ✓', time: '7:00 AM' },
+    ];
+
+    var nextId = 15;
+    var currentFilter = 'all';
+    var currentSearch = '';
+
+    // ── HELPERS ───────────────────────────────────────────
+    function getStatus(item) {
+      if (item.stock <= 0) return 'out';
+      if (item.stock < item.min) return 'low';
+      return 'ok';
+    }
+
+    function now() {
+      return new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    function showToast(msg, type) {
+      type = type || 'success';
+      var icons = { success: '✅', error: '❌', warning: '⚠️' };
+      var t = document.getElementById('toast');
+      t.innerHTML = '<span>' + (icons[type] || 'ℹ️') + '</span><span>' + msg + '</span>';
+      t.className = 'toast ' + type + ' show';
+      clearTimeout(t._timer);
+      t._timer = setTimeout(function () { t.classList.remove('show'); }, 3000);
+    }
+
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+
+    // ── AUTH ──────────────────────────────────────────────
+    function selectRole(el) {
+      document.querySelectorAll('.role-opt').forEach(function (e) { e.classList.remove('selected'); });
+      el.classList.add('selected');
+    }
+
+    function doLogin() {
+      document.getElementById('loginScreen').style.display = 'none';
+      renderAll();
+      showToast('Welcome back! ☕', 'success');
+    }
+
+    function doLogout() {
+      document.getElementById('loginScreen').style.display = 'flex';
+    }
+
+    // ── NAV ───────────────────────────────────────────────
+    function showPage(page, navEl) {
+      document.querySelectorAll('.content').forEach(function (c) { c.classList.remove('active'); });
+      document.getElementById('page-' + page).classList.add('active');
+      if (navEl) {
+        document.querySelectorAll('.nav-item').forEach(function (n) { n.classList.remove('active'); });
+        navEl.classList.add('active');
+      }
+      var titles = {
+        dashboard: 'Dashboard', inventory: 'Inventory',
+        movements: 'Stock Movement', sales: 'Sales',
+        alerts: 'Alerts'
+      };
+      document.getElementById('topbarTitle').textContent = titles[page] || page;
+      closeSidebar();
+    }
+
+    function toggleSidebar() {
+      document.getElementById('sidebar').classList.toggle('open');
+      document.getElementById('sidebarOverlay').style.display =
+        document.getElementById('sidebar').classList.contains('open') ? 'block' : 'none';
+    }
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('open');
+      document.getElementById('sidebarOverlay').style.display = 'none';
+    }
+
+    // ── RENDER ALL ────────────────────────────────────────
+    function renderAll() {
+      renderInventory();
+      renderMovements();
+      renderRecipes();
+      renderAlerts();
+      renderDashLow();
+      renderActivity();
+      updateStats();
+    }
+
+    // ── INVENTORY ─────────────────────────────────────────
+    function renderInventory() {
+      var items = inventory.filter(function (i) {
+        var catOk = currentFilter === 'all' || i.cat === currentFilter;
+        var srchOk = !currentSearch || i.name.toLowerCase().indexOf(currentSearch.toLowerCase()) >= 0 || i.cat.toLowerCase().indexOf(currentSearch.toLowerCase()) >= 0;
+        return catOk && srchOk;
+      });
+      document.getElementById('invCount').textContent = items.length;
+      var html = items.map(function (i) {
+        var s = getStatus(i);
+        var pct = i.min > 0 ? Math.min(100, Math.round(i.stock / i.min * 100)) : 100;
+        var col = s === 'out' ? 'red' : s === 'low' ? 'amber' : 'green';
+        var badge = s === 'out' ? '<span class="badge badge-red">Out of Stock</span>'
+          : s === 'low' ? '<span class="badge badge-amber">Low Stock</span>'
+            : '<span class="badge badge-green">In Stock</span>';
+        return '<tr>'
+          + '<td><strong>' + i.name + '</strong></td>'
+          + '<td><span class="badge badge-gray">' + i.cat + '</span></td>'
+          + '<td><div style="min-width:90px"><div style="font-weight:600">' + i.stock + ' ' + i.unit + '</div>'
+          + '<div class="prog-bar"><div class="prog-fill prog-' + col + '" style="width:' + pct + '%"></div></div></div></td>'
+          + '<td style="color:var(--text3)">' + i.min + '</td>'
+          + '<td>' + badge + '</td>'
+          + '<td><button onclick="openEditModal(' + i.id + ')" style="background:none;border:none;color:var(--brand2);cursor:pointer;font-size:14px;margin-right:6px">✏️</button>'
+          + '<button onclick="deleteItem(' + i.id + ')" style="background:none;border:none;color:var(--red);cursor:pointer;font-size:14px">🗑️</button></td>'
+          + '</tr>';
+      }).join('');
+      document.getElementById('invBody').innerHTML = html || '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:30px">No products found</td></tr>';
+    }
+
+    function filterCat(cat, el) {
+      document.querySelectorAll('#catFilters .filter-btn').forEach(function (b) { b.classList.remove('active'); });
+      el.classList.add('active');
+      currentFilter = cat;
+      renderInventory();
+    }
+    function searchInventory(val) { currentSearch = val; renderInventory(); }
+    function globalSearch(val) {
+      if (!val) return;
+      currentSearch = val;
+      currentFilter = 'all';
+      showPage('inventory', document.querySelectorAll('.nav-item')[1]);
+      renderInventory();
+    }
+
+    // ── ADD PRODUCT ───────────────────────────────────────
+    function openAddModal() { openModal('addModal'); }
+
+    function addProduct() {
+      var name = document.getElementById('nName').value.trim();
+      if (!name) { showToast('Please enter a product name', 'error'); return; }
+      var stock = parseFloat(document.getElementById('nStock').value) || 0;
+      var min = parseFloat(document.getElementById('nMin').value) || 0;
+      inventory.push({
+        id: nextId++,
+        name: name,
+        cat: document.getElementById('nCat').value,
+        stock: stock, min: min,
+        unit: document.getElementById('nUnit').value,
+        cost: parseFloat(document.getElementById('nCost').value) || 0,
+        supplier: document.getElementById('nSupplier').value || 'Unknown',
+        exp: document.getElementById('nExp').value || null,
+      });
+      closeModal('addModal');
+      document.getElementById('nName').value = '';
+      document.getElementById('nStock').value = '';
+      document.getElementById('nMin').value = '';
+      document.getElementById('nCost').value = '';
+      document.getElementById('nSupplier').value = '';
+      document.getElementById('nExp').value = '';
+      renderAll();
+      showToast(name + ' added! 📦', 'success');
+    }
+
+    // ── EDIT PRODUCT ──────────────────────────────────────
+    function openEditModal(id) {
+      var i = inventory.find(function (x) { return x.id === id; });
+      if (!i) return;
+      document.getElementById('editId').value = id;
+      document.getElementById('eName').value = i.name;
+      document.getElementById('eCat').value = i.cat;
+      document.getElementById('eStock').value = i.stock;
+      document.getElementById('eMin').value = i.min;
+      document.getElementById('eUnit').value = i.unit;
+      document.getElementById('eCost').value = i.cost;
+      document.getElementById('eSupplier').value = i.supplier || '';
+      document.getElementById('eExp').value = i.exp || '';
+      openModal('editModal');
+    }
+
+    function saveEdit() {
+      var id = parseInt(document.getElementById('editId').value);
+      var i = inventory.find(function (x) { return x.id === id; });
+      if (!i) return;
+      i.name = document.getElementById('eName').value.trim() || i.name;
+      i.cat = document.getElementById('eCat').value;
+      i.stock = parseFloat(document.getElementById('eStock').value) || 0;
+      i.min = parseFloat(document.getElementById('eMin').value) || 0;
+      i.unit = document.getElementById('eUnit').value;
+      i.cost = parseFloat(document.getElementById('eCost').value) || 0;
+      i.supplier = document.getElementById('eSupplier').value;
+      i.exp = document.getElementById('eExp').value || null;
+      closeModal('editModal');
+      renderAll();
+      showToast(i.name + ' updated! ✏️', 'success');
+    }
+
+    function deleteItem(id) {
+      var i = inventory.find(function (x) { return x.id === id; });
+      if (i && confirm('Delete "' + i.name + '"?')) {
+        inventory = inventory.filter(function (x) { return x.id !== id; });
+        renderAll();
+        showToast('Item deleted', 'error');
+      }
+    }
+
+    // ── STOCK MOVEMENT ────────────────────────────────────
+    function renderMovements() {
+      var sel = document.getElementById('moveProduct');
+      if (sel) {
+        sel.innerHTML = inventory.map(function (i) {
+          return '<option value="' + i.id + '">' + i.name + ' (' + i.stock + ' ' + i.unit + ')</option>';
+        }).join('');
+      }
+      document.getElementById('moveList').innerHTML = movements.map(function (m) {
+        return '<div class="move-item">'
+          + '<div class="move-dir move-' + m.dir + '">' + (m.dir === 'in' ? 'IN' : 'OUT') + '</div>'
+          + '<div class="move-info"><div class="move-product">' + m.product + '</div>'
+          + '<div class="move-meta">' + m.reason + ' · ' + m.staff + ' · ' + m.time + '</div></div>'
+          + '<div class="move-qty" style="color:var(--' + (m.dir === 'in' ? 'green' : 'red') + ')">'
+          + (m.dir === 'in' ? '+' : '-') + m.qty + ' ' + m.unit + '</div>'
+          + '</div>';
+      }).join('') || '<div style="padding:30px;text-align:center;color:var(--text3)">No movements yet</div>';
+    }
+
+    function openMovementModal(dir) {
+      document.getElementById('moveDir').value = dir;
+      document.getElementById('moveTitleEl').innerHTML = (dir === 'in' ? '📥 Stock In' : '📤 Stock Out')
+        + ' <button class="modal-close" onclick="closeModal(\'moveModal\')">✕</button>';
+      var reasons = dir === 'in'
+        ? ['Supplier Delivery', 'Return / Refund', 'Inventory Correction']
+        : ['Drink Preparation', 'Damaged / Spoiled', 'Expired', 'Staff Consumption', 'Wastage'];
+      document.getElementById('moveReason').innerHTML = reasons.map(function (r) { return '<option>' + r + '</option>'; }).join('');
+      renderMovements();
+      openModal('moveModal');
+    }
+
+    function logMovement() {
+      var pid = parseInt(document.getElementById('moveProduct').value);
+      var qty = parseFloat(document.getElementById('moveQty').value);
+      var dir = document.getElementById('moveDir').value;
+      var staff = document.getElementById('moveStaff').value.trim() || 'Staff';
+      var reason = document.getElementById('moveReason').value;
+      if (!qty || qty <= 0) { showToast('Enter a valid quantity', 'error'); return; }
+      var item = inventory.find(function (i) { return i.id === pid; });
+      if (item) {
+        item.stock = dir === 'in'
+          ? Math.round((item.stock + qty) * 1000) / 1000
+          : Math.max(0, Math.round((item.stock - qty) * 1000) / 1000);
+        movements.unshift({ dir: dir, product: item.name, qty: qty, unit: item.unit, reason: reason, staff: staff, time: now() });
+      }
+      document.getElementById('moveQty').value = '';
+      document.getElementById('moveStaff').value = '';
+      closeModal('moveModal');
+      renderAll();
+      showToast('Stock ' + dir + ' logged for ' + (item ? item.name : '') + '!', dir === 'in' ? 'success' : 'warning');
+    }
+
+    // ── RECIPES & SALES ───────────────────────────────────
+    function renderRecipes() {
+      document.getElementById('recipeGrid').innerHTML = recipes.map(function (r) {
+        return '<div class="recipe-card">'
+          + '<div class="recipe-name">' + r.icon + ' ' + r.name + ' <span class="badge badge-green">₱' + r.price + '</span></div>'
+          + r.ingredients.map(function (ing) {
+            return '<div class="recipe-ing"><span>' + ing.name + '</span><span style="color:var(--red)">−' + ing.qty + ' ' + ing.unit + '</span></div>';
+          }).join('')
+          + '<button class="sell-btn" onclick="sellDrink(\'' + r.name.replace(/'/g, "\\'") + '\')">☕ Log Sale — Deduct Inventory</button>'
+          + '</div>';
+      }).join('');
+    }
+
+    function sellDrink(name) {
+      var r = recipes.find(function (x) { return x.name === name; });
+      if (!r) return;
+      r.ingredients.forEach(function (ing) {
+        var item = inventory.find(function (i) { return i.name === ing.name; });
+        if (item) {
+          var deduct = ing.unit === 'g' ? ing.qty / 1000 : ing.unit === 'ml' ? ing.qty / 1000 : ing.qty;
+          item.stock = Math.max(0, Math.round((item.stock - deduct) * 1000) / 1000);
+        }
+      });
+      activities.unshift({ color: 'green', text: '☕ ' + name + ' sold — ingredients deducted', time: now() });
+      movements.unshift({ dir: 'out', product: name + ' (sale)', qty: 1, unit: 'drink', reason: 'Drink Preparation', staff: 'Staff', time: now() });
+      renderAll();
+      showToast(name + ' sold! Ingredients deducted 📉', 'success');
+    }
+
+    // ── ALERTS ────────────────────────────────────────────
+    function renderAlerts() {
+      var lows = inventory.filter(function (i) { return getStatus(i) !== 'ok'; });
+      var cnt = lows.length;
+      document.getElementById('lowBadge').textContent = cnt;
+      document.getElementById('alertBadge').textContent = cnt;
+      document.getElementById('alertsGrid').innerHTML = lows.length
+        ? lows.map(function (i) {
+          var s = getStatus(i);
+          var pct = i.min > 0 ? Math.min(100, Math.round(i.stock / i.min * 100)) : 0;
+          var col = s === 'out' ? 'red' : 'amber';
+          return '<div class="panel" style="margin-bottom:10px">'
+            + '<div style="padding:16px 18px;display:flex;align-items:center;gap:14px">'
+            + '<span style="font-size:26px">' + (s === 'out' ? '🚫' : '⚠️') + '</span>'
+            + '<div style="flex:1"><div style="font-size:14px;font-weight:600">' + i.name + '</div>'
+            + '<div style="font-size:11px;color:var(--text3);margin-top:3px">'
+            + i.stock + ' ' + i.unit + ' remaining · Min: ' + i.min + ' ' + i.unit + ' · ' + i.supplier + '</div>'
+            + '<div class="prog-bar" style="margin-top:8px"><div class="prog-fill prog-' + col + '" style="width:' + pct + '%"></div></div></div>'
+            + '<span class="badge badge-' + col + '">' + (s === 'out' ? 'Out of Stock' : 'Low Stock') + '</span>'
+            + '</div></div>';
+        }).join('')
+        : '<div style="text-align:center;padding:40px;color:var(--text3)">✅ All items are well-stocked!</div>';
+    }
+
+    // ── DASHBOARD WIDGETS ─────────────────────────────────
+    function renderDashLow() {
+      var lows = inventory.filter(function (i) { return getStatus(i) !== 'ok'; }).slice(0, 4);
+      document.getElementById('dashLowList').innerHTML = lows.map(function (i) {
+        var s = getStatus(i);
+        var pct = i.min > 0 ? Math.min(100, Math.round(i.stock / i.min * 100)) : 0;
+        var col = s === 'out' ? 'red' : 'amber';
+        return '<div class="low-item">'
+          + '<span style="font-size:18px">' + (s === 'out' ? '🚫' : '⚠️') + '</span>'
+          + '<div class="low-info"><div class="low-name">' + i.name + '</div>'
+          + '<div class="low-detail">' + i.stock + ' ' + i.unit + ' left · min ' + i.min + '</div>'
+          + '<div class="prog-bar"><div class="prog-fill prog-' + col + '" style="width:' + pct + '%"></div></div></div>'
+          + '<span class="badge badge-' + col + '">' + (s === 'out' ? 'Out' : 'Low') + '</span>'
+          + '</div>';
+      }).join('') || '<div style="padding:20px 18px;color:var(--text3)">✅ All stocked up!</div>';
+    }
+
+    function renderActivity() {
+      document.getElementById('dashActivity').innerHTML = activities.slice(0, 6).map(function (a) {
+        return '<div class="activity-item">'
+          + '<div class="act-dot" style="background:var(--' + a.color + ')"></div>'
+          + '<div class="act-text">' + a.text + '</div>'
+          + '<div class="act-time">' + a.time + '</div>'
+          + '</div>';
+      }).join('');
+    }
+
+    function updateStats() {
+      var low = inventory.filter(function (i) { return getStatus(i) === 'low'; }).length;
+      var out = inventory.filter(function (i) { return getStatus(i) === 'out'; }).length;
+      document.getElementById('statTotal').textContent = inventory.length;
+      document.getElementById('statLow').textContent = low;
+      document.getElementById('statOut').textContent = out;
+    }
+
+  </script>
+</body>
+
+</html>
